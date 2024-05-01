@@ -46,6 +46,7 @@ volatile unsigned int counter;
 volatile uint8_t status;
 volatile uint8_t commands_pending;
 uint8_t d_data[8];
+static uint8_t can_data[8] = {0, 1, 2, 0, 0, 0, 0, 0};
 
 static void gpio_setup(void)
 {
@@ -204,8 +205,8 @@ static void can_setup(void)
     /* Reset CAN */
     can_reset(CAN1);
 
-    /* defaultt CAN setting 250 kBaud */
-    if (can_speed(5)) {
+    /* defaultt CAN setting 500 kBaud */
+    if (can_speed(6)) {
         gpio_clear(GPIOC, GPIO13); /* LED green on */
 
         /* Die because we failed to initialize. */
@@ -225,7 +226,6 @@ static void can_setup(void)
 
 void sys_tick_handler(void)
 {
-
     /* We call this handler every 1ms so every 1ms = 0.001s
 	 * resulting in 1Hz message rate.
 	 */
@@ -235,6 +235,15 @@ void sys_tick_handler(void)
     if (counter == 500) {
         counter = 0;
         gpio_toggle(GPIOC, GPIO13); /* toggle green LED */
+
+        /* Transmit CAN frame. */
+        can_data[0]++;
+        can_transmit(CAN1,
+                0,     /* (EX/ST)ID: CAN ID */
+                false, /* IDE: CAN ID extended? */
+                false, /* RTR: Request transmit? */
+                8,     /* DLC: Data length */
+                can_data);
     }
 }
 

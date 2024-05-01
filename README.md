@@ -50,8 +50,10 @@ and do:
 sudo modprobe can
 sudo modprobe can-raw
 sudo modprobe slcan
-sudo slcand -s5 -S2000000 /dev/ttyUSB0 can0 # CAN Speed 5 ->250 kBaud, 2,000,000 Baud serial
+sudo slcand -s6 -S2000000 /dev/ttyUSB0 can0 # CAN Speed 5 ->250 kBaud, 2,000,000 Baud serial
 ifconfig can0 up
+
+cansend can0 123#DEADBEEF
 ```
 Now you can use it as SocketCAN interface - enjoy :-)
 
